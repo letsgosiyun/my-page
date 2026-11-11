@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정시윤의 8비트 레트로 오락실 🕹️</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Pixel Fonts (Press Start 2P & Galmuri11 for Korean retro font) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Galmuri11:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <style>
+        /* 8비트 레트로 폰트 및 글로벌 기본 스타일 설정 */
+        body {
+            font-family: 'Galmuri11', monospace, sans-serif;
+            background-color: #0b0714;
+            color: #33ff00;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(#1f1538 15%, transparent 16%),
+                radial-gradient(#150c26 15%, transparent 16%);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+        }
+
+        .font-pixel-heading {
+            font-family: 'Press Start 2P', 'Galmuri11', monospace;
+        }
+
+        /* 레트로 CRT 브라운관 스캔라인 효과 모방 */
+        .crt-overlay {
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.25) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        /* 픽셀 스타일 박스 테두리 */
+        .pixel-box {
+            border: 4px solid #33ff00;
+            box-shadow: 
+                4px 4px 0px #000, 
+                -4px -4px 0px #000,
+                0 0 15px rgba(51, 255, 0, 0.3);
+            background-color: #120b24;
+        }
+
+        .pixel-box-pink {
+            border: 4px solid #ff007f;
+            box-shadow: 
+                4px 4px 0px #000, 
+                0 0 15px rgba(255, 0, 127, 0.4);
+            background-color: #1a0826;
+        }
+
+        .pixel-box-yellow {
+            border: 4px solid #ffe600;
+            box-shadow: 
+                4px 4px 0px #000, 
+                0 0 15px rgba(255, 230, 0, 0.4);
+            background-color: #241d08;
+        }
+
+        .pixel-box-cyan {
+            border: 4px solid #00f0ff;
+            box-shadow: 
+                4px 4px 0px #000, 
+                0 0 15px rgba(0, 240, 255, 0.4);
+            background-color: #061d2b;
+        }
+
+        /* 픽셀 버튼 레트로 클릭 느낌 */
+        .pixel-btn {
+            position: relative;
+            display: inline-block;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 10px 18px;
+            border: 3px solid #ffffff;
+            background-color: #ff0055;
+            color: #ffffff;
+            box-shadow: inset -4px -4px 0px 0px #990033, 4px 4px 0px 0px #000000;
+            transition: all 0.05s ease;
+            user-select: none;
+        }
+
+        .pixel-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: inset -4px -4px 0px 0px #990033, 6px 6px 0px 0px #000000;
+            filter: brightness(1.1);
+        }
+
+        .pixel-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: inset 4px 4px 0px 0px #990033, 0px 0px 0px 0px #000000;
+        }
+
+        .pixel-btn-cyan {
+            background-color: #00bcd4;
+            box-shadow: inset -4px -4px 0px 0px #007788, 4px 4px 0px 0px #000000;
+        }
+        .pixel-btn-cyan:hover {
+            box-shadow: inset -4px -4px 0px 0px #007788, 6px 6px 0px 0px #000000;
+        }
+        .pixel-btn-cyan:active {
+            box-shadow: inset 4px 4px 0px 0px #007788, 0px 0px 0px 0px #000000;
+        }
+
+        .pixel-btn-green {
+            background-color: #00c853;
+            box-shadow: inset -4px -4px 0px 0px #007b33, 4px 4px 0px 0px #000000;
+        }
+        .pixel-btn-green:hover {
+            box-shadow: inset -4px -4px 0px 0px #007b33, 6px 6px 0px 0px #000000;
+        }
+        .pixel-btn-green:active {
+            box-shadow: inset 4px 4px 0px 0px #007b33, 0px 0px 0px 0px #000000;
+        }
+
+        /* 3D 플립 카드 효과 설정 */
+        .flip-card {
+            background-color: transparent;
+            perspective: 1000px;
+            height: 220px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            border-radius: 4px;
+        }
+
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* 깜빡이는 애니메이션 */
+        .blink {
+            animation: blinker 1s steps(2, start) infinite;
+        }
+        @keyframes blinker {
+            to { visibility: hidden; }
+        }
+
+        /* 화면 흔들림 효과 (퀴즈 오답 시) */
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+
+        /* 네온 글로우 */
+        .neon-text-green {
+            text-shadow: 0 0 8px #33ff00, 0 0 15px #33ff00;
+        }
+        .neon-text-pink {
+            text-shadow: 0 0 8px #ff007f, 0 0 15px #ff007f;
+        }
+        .neon-text-yellow {
+            text-shadow: 0 0 8px #ffe600, 0 0 15px #ffe600;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12 relative select-none">
+    <!-- 화면 CRT 스캔라인 효과 레이어 -->
+    <div class="fixed inset-0 crt-overlay z-50 pointer-events-none"></div>
+
+    <!-- 최상단 헤더 & 사운드 토글 -->
+    <header class="w-full max-w-4xl mx-auto p-4 flex justify-between items-center z-40 relative">
+        <div class="flex items-center space-x-2">
+            <span class="inline-block w-4 h-4 bg-red-500 rounded-full animate-ping"></span>
+            <span class="text-xs text-pink-400 font-pixel-heading">PLAYER 1 READY</span>
+        </div>
+        <button id="soundToggleBtn" onclick="toggleAudio()" class="pixel-btn text-xs py-1 px-3 bg-indigo-700">
+            🔊 사운드: ON
+        </button>
+    </header>
+
+    <!-- 메인 컨테이너 -->
+    <main class="max-w-4xl mx-auto px-4 space-y-8 relative z-10">
+
+        <!-- 1. 캐릭터 프로필 히어로 섹션 -->
+        <section class="pixel-box p-6 md:p-8 text-center relative overflow-hidden">
+            <div class="absolute top-2 right-3 text-xs text-gray-400 font-pixel-heading">STAGE 01</div>
+            
+            <!-- 오락실 타이틀 -->
+            <h1 class="text-2xl md:text-4xl font-bold mb-4 text-yellow-300 neon-text-yellow tracking-wider">
+                🕹️ 정시윤의 레트로 홈피
+            </h1>
+            
+            <!-- 8비트 캐릭터 아바타 아키텍처 -->
+            <div class="my-6 inline-block relative">
+                <div class="w-28 h-28 mx-auto bg-purple-900 border-4 border-yellow-400 flex items-center justify-center text-5xl shadow-lg relative">
+                    😎
+                    <span class="absolute -bottom-2 -right-2 bg-pink-600 text-white text-[10px] px-2 py-0.5 border border-black font-pixel-heading">LV.99</span>
+                </div>
+            </div>
+
+            <!-- 기본 캐릭터 능력치 스탯 -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-xl mx-auto text-xs md:text-sm font-semibold">
+                <div class="bg-black/50 p-2 border border-green-500/50 rounded">
+                    <span class="text-gray-400 block">닉네임</span>
+                    <span class="text-white text-base">정시윤</span>
+                </div>
+                <div class="bg-black/50 p-2 border border-green-500/50 rounded">
+                    <span class="text-gray-400 block">클래스</span>
+                    <span class="text-cyan-400 text-base">게이머 / 겜돌이</span>
+                </div>
+                <div class="bg-black/50 p-2 border border-green-500/50 rounded">
+                    <span class="text-gray-400 block">HP / MP</span>
+                    <span class="text-red-400 text-base">100% / ∞</span>
+                </div>
+                <div class="bg-black/50 p-2 border border-green-500/50 rounded">
+                    <span class="text-gray-400 block">필살기</span>
+                    <span class="text-yellow-400 text-base">침대 뒹굴기</span>
+                </div>
+            </div>
+            
+            <p class="mt-6 text-gray-300 text-sm md:text-base leading-relaxed">
+                "안녕하세요! 8비트 감성을 좋아하는 <span class="text-green-400 font-bold">정시윤</span>입니다.<br>
+                아래 퀘스트와 카드들을 클릭해서 저에 대해 알아보세요!"
+            </p>
+        </section>
+
+        <!-- 2. 방문자 환영 입력 섹션 (PLAYER 2 접속) -->
+        <section class="pixel-box-cyan p-6">
+            <h2 class="text-lg md:text-xl font-bold text-cyan-300 mb-3 flex items-center gap-2">
+                <span>👾</span> PLAYER 2 (방문자) 등록
+            </h2>
+            <p class="text-xs text-gray-300 mb-4">당신의 닉네임을 입력하고 오락실에 접속하세요!</p>
+            
+            <div class="flex flex-col sm:flex-row gap-3">
+                <input type="text" id="visitorNameInput" placeholder="이름을 입력해 주세요..." 
+                       class="flex-1 bg-black text-white px-4 py-3 border-2 border-cyan-400 focus:outline-none focus:border-yellow-400 font-semibold text-sm">
+                <button onclick="welcomeVisitor()" class="pixel-btn pixel-btn-cyan whitespace-nowrap">
+                    🎮 접속하기
+                </button>
+            </div>
+
+            <!-- 환영 대사 출력 상자 -->
+            <div id="welcomeDisplay" class="hidden mt-4 p-4 bg-black/80 border-2 border-yellow-400 text-yellow-300 text-sm md:text-base leading-relaxed">
+                <div class="text-xs text-gray-400 mb-1">SYSTEM MESSAGE:</div>
+                <div id="welcomeText" class="font-bold"></div>
+            </div>
+        </section>
+
+        <!-- 3. 좋아하는 것 3가지 (카드 뒤집기) -->
+        <section class="space-y-4">
+            <div class="text-center">
+                <h2 class="text-xl md:text-2xl font-bold text-pink-400 neon-text-pink inline-block">
+                    ❤️ 정시윤이 좋아하는 3가지
+                </h2>
+                <p class="text-xs text-gray-400 mt-1">카드를 누르면 뒤집히면서 비하인드 이유가 등장합니다!</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- 카드 1: 포켓몬 -->
+                <div class="flip-card" onclick="flipCard(this)">
+                    <div class="flip-card-inner">
+                        <!-- 앞면 -->
+                        <div class="flip-card-front pixel-box-pink">
+                            <div class="text-5xl mb-2">⚡</div>
+                            <h3 class="text-xl font-bold text-yellow-300">포켓몬</h3>
+                            <span class="mt-4 text-xs bg-pink-900/80 text-pink-200 px-3 py-1 rounded-full border border-pink-400">
+                                👆 누르면 뒤집힘!
+                            </span>
+                        </div>
+                        <!-- 뒷면 -->
+                        <div class="flip-card-back pixel-box">
+                            <h4 class="text-sm font-bold text-pink-400 mb-2">⚡ 포켓몬을 좋아하는 이유</h4>
+                            <p class="text-xs text-gray-200 leading-relaxed">
+                                "작은 몬스터볼 안에 집어넣어서 주머니에 넣고 다닐 수 있는 압도적 휴대성과 효율성에 감동받음! 내 꿈은 전설의 포켓몬 마스터!"
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 카드 2: 게임 -->
+                <div class="flip-card" onclick="flipCard(this)">
+                    <div class="flip-card-inner">
+                        <!-- 앞면 -->
+                        <div class="flip-card-front pixel-box-cyan">
+                            <div class="text-5xl mb-2">🎮</div>
+                            <h3 class="text-xl font-bold text-cyan-300">게임</h3>
+                            <span class="mt-4 text-xs bg-cyan-900/80 text-cyan-200 px-3 py-1 rounded-full border border-cyan-400">
+                                👆 누르면 뒤집힘!
+                            </span>
+                        </div>
+                        <!-- 뒷면 -->
+                        <div class="flip-card-back pixel-box">
+                            <h4 class="text-sm font-bold text-cyan-400 mb-2">🎮 게임을 좋아하는 이유</h4>
+                            <p class="text-xs text-gray-200 leading-relaxed">
+                                "현실의 퀘스트는 너무 어렵고 복잡하지만, 게임 퀘스트는 누르고 노력한 만큼 경험치와 레벨업을 직관적으로 주기 때문!"
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 카드 3: 돈 -->
+                <div class="flip-card" onclick="flipCard(this)">
+                    <div class="flip-card-inner">
+                        <!-- 앞면 -->
+                        <div class="flip-card-front pixel-box-yellow">
+                            <div class="text-5xl mb-2">💰</div>
+                            <h3 class="text-xl font-bold text-yellow-300">돈</h3>
+                            <span class="mt-4 text-xs bg-yellow-900/80 text-yellow-200 px-3 py-1 rounded-full border border-yellow-400">
+                                👆 누르면 뒤집힘!
+                            </span>
+                        </div>
+                        <!-- 뒷면 -->
+                        <div class="flip-card-back pixel-box">
+                            <h4 class="text-sm font-bold text-yellow-400 mb-2">💰 돈을 좋아하는 이유</h4>
+                            <p class="text-xs text-gray-200 leading-relaxed">
+                                "자본主义 레트로 게임 세상을 살아가는 데 최고의 파워업 아이템! 돈만 있으면 오락실 코인도, 상점 고급 장비도 풀매수 가능!"
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. OX 퀴즈 섹션 -->
+        <section id="quizSection" class="pixel-box p-6 md:p-8 relative">
+            <div class="text-center space-y-4">
+                <span class="bg-red-600 text-white text-xs px-3 py-1 border border-black font-pixel-heading">STAGE QUIZ</span>
+                <h2 class="text-xl md:text-2xl font-bold text-white">
+                    ❓ OX 퀴즈: "나는 돈을 좋아한다"
+                </h2>
+                <p class="text-sm text-gray-300">정시윤의 솔직한 마음은 과연 O일까요 X일까요?</p>
+
+                <!-- OX 선택 버튼 -->
+                <div class="flex justify-center gap-6 pt-2">
+                    <button onclick="checkQuiz('O')" class="pixel-btn pixel-btn-green text-3xl px-8 py-4">
+                        ⭕ O
+                    </button>
+                    <button onclick="checkQuiz('X')" class="pixel-btn text-3xl px-8 py-4">
+                        ❌ X
+                    </button>
+                </div>
+
+                <!-- 결과 메시지 출력 공간 -->
+                <div id="quizResult" class="hidden mt-4 p-4 border-2 text-center text-base md:text-lg font-bold"></div>
+            </div>
+        </section>
+
+        <!-- 5. 나만의 명언 가챠 (10개 이상) -->
+        <section class="pixel-box-pink p-6 md:p-8 text-center space-y-4">
+            <h2 class="text-xl md:text-2xl font-bold text-pink-300">
+                📜 정시윤의 나만의 명언집
+            </h2>
+            <p class="text-xs text-gray-300">버튼을 눌러 정시윤의 8비트 인생 명언을 뽑아보세요!</p>
+
+            <!-- 명언 출력 상자 -->
+            <div class="min-h-[100px] bg-black/80 border-2 border-pink-500 p-6 flex flex-col items-center justify-center relative">
+                <span class="absolute top-2 left-2 text-[10px] text-pink-400 font-pixel-heading">QUOTE GENERATOR</span>
+                <p id="quoteText" class="text-base md:text-lg font-bold text-yellow-300 leading-relaxed">
+                    "버튼을 눌러 명언 카드를 가챠하세요!"
+                </p>
+            </div>
+
+            <button onclick="getRandomQuote()" class="pixel-btn text-sm md:text-base">
+                🎲 명언 획득하기 (CLICK!)
+            </button>
+        </section>
+
+        <!-- 6. 10초 광클 미니게임 섹션 -->
+        <section class="pixel-box-yellow p-6 md:p-8 text-center space-y-6">
+            <div>
+                <span class="bg-yellow-500 text-black font-bold text-xs px-3 py-1 border border-black font-pixel-heading">MINI GAME</span>
+                <h2 class="text-xl md:text-2xl font-bold text-yellow-300 mt-2">
+                    ⚡ 10초 광클 연타 측정기
+                </h2>
+                <p class="text-xs text-gray-300 mt-1">10초 동안 최선을 다해 버튼을 연타하세요!</p>
+            </div>
+
+            <!-- 스코어판 -->
+            <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto bg-black p-4 border-2 border-yellow-400">
+                <div>
+                    <div class="text-xs text-gray-400">남은 시간</div>
+                    <div id="gameTimer" class="text-3xl font-bold text-red-500 font-pixel-heading">10.0s</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-400">클릭 횟수</div>
+                    <div id="gameScore" class="text-3xl font-bold text-green-400 font-pixel-heading">0</div>
+                </div>
+            </div>
+
+            <!-- 미니게임 액션 영역 -->
+            <div class="space-y-4">
+                <button id="gameStartBtn" onclick="startMiniGame()" class="pixel-btn pixel-btn-green text-lg px-6 py-3">
+                    🚀 게임 시작!
+                </button>
+
+                <div id="tapArea" class="hidden">
+                    <button id="tapBtn" onclick="registerTap()" class="w-full max-w-xs py-8 pixel-btn text-2xl font-black bg-red-600 hover:bg-red-500 active:bg-red-700">
+                        🔥 TAP! TAP! 🔥
+                    </button>
+                </div>
+            </div>
+
+            <!-- 최고 기록 및 결과 모달 출력 -->
+            <div id="gameResultBox" class="hidden bg-black/90 p-4 border-2 border-green-400 text-green-300 text-sm leading-relaxed">
+                <div id="gameRankTitle" class="text-lg font-bold text-yellow-300"></div>
+                <div id="gameFinalDetail" class="mt-1"></div>
+            </div>
+            <div class="text-xs text-gray-400">
+                🏆 최고 기록: <span id="highScoreText" class="text-yellow-300 font-bold">0</span>회
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="mt-12 text-center text-xs text-gray-500 relative z-10">
+        <p>© 2026 정시윤 8-BIT RETRO ARCADE. ALL RIGHTS RESERVED.</p>
+        <p class="mt-1 blink text-green-500">PRESS ANY KEY TO ENJOY LIFE!</p>
+    </footer>
+
+    <!-- 폭죽 효과용 자바스크립트 폭죽 Canvas 레이어 -->
+    <canvas id="confettiCanvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+
+    <!-- JavaScript 로직 -->
+    <script>
+        /* ====================================================
+           1. Web Audio API 오락실 사운드 이펙트 제어기
+           ==================================================== */
+        let audioCtx = null;
+        let soundEnabled = true;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById('soundToggleBtn');
+            if (soundEnabled) {
+                btn.innerText = '🔊 사운드: ON';
+                playSound('click');
+            } else {
+                btn.innerText = '🔇 사운드: OFF';
+            }
+        }
+
+        // 비프음 및 오락실 효과음 생성기
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                initAudio();
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'click') {
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.05);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                } else if (type === 'flip') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.08);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'win') {
+                    // 팬파레 승리음
+                    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                    notes.forEach((freq, idx) => {
+                        const noteOsc = audioCtx.createOscillator();
+                        const noteGain = audioCtx.createGain();
+                        noteOsc.type = 'triangle';
+                        noteOsc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                        noteGain.gain.setValueAtTime(0.15, now + idx * 0.08);
+                        noteGain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.15);
+                        noteOsc.connect(noteGain);
+                        noteGain.connect(audioCtx.destination);
+                        noteOsc.start(now + idx * 0.08);
+                        noteOsc.stop(now + idx * 0.08 + 0.15);
+                    });
+                } else if (type === 'lose') {
+                    // 실패음
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(200, now);
+                    osc.frequency.linearRampToValueAtTime(80, now + 0.3);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'tap') {
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(600 + Math.random() * 200, now);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+                    osc.start(now);
+                    osc.stop(now + 0.03);
+                }
+            } catch (e) {
+                console.log("Audio play error:", e);
+            }
+        }
+
+
+        /* ====================================================
+           2. 방문자 환영 대사 로직
+           ==================================================== */
+        function welcomeVisitor() {
+            playSound('click');
+            const input = document.getElementById('visitorNameInput');
+            const displayBox = document.getElementById('welcomeDisplay');
+            const textEl = document.getElementById('welcomeText');
+            
+            const name = input.value.trim();
+            if (!name) {
+                alert("이름을 입력해 주세요!");
+                return;
+            }
+
+            displayBox.classList.remove('hidden');
+            const message = `👾 [PLAYER 2: ${name}] 님 환영합니다! 정시윤의 8비트 오락실 세상에 입장하셨습니다. 모든 스테이지를 마음껏 즐겨주세요! 🔥`;
+            
+            // 타자기 타이핑 효과
+            textEl.innerText = "";
+            let i = 0;
+            const timer = setInterval(() => {
+                if (i < message.length) {
+                    textEl.innerText += message.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(timer);
+                }
+            }, 30);
+        }
+
+
+        /* ====================================================
+           3. 카드 뒤집기 로직
+           ==================================================== */
+        function flipCard(cardElement) {
+            playSound('flip');
+            cardElement.classList.toggle('flipped');
+        }
+
+
+        /* ====================================================
+           4. OX 퀴즈 로직 & 축하 픽셀 캔버스 폭죽
+           ==================================================== */
+        function checkQuiz(userChoice) {
+            const quizSection = document.getElementById('quizSection');
+            const resultBox = document.getElementById('quizResult');
+            resultBox.classList.remove('hidden');
+
+            if (userChoice === 'O') {
+                playSound('win');
+                quizSection.classList.remove('shake');
+                resultBox.className = "mt-4 p-4 border-2 border-green-400 bg-green-950/80 text-green-300 text-center font-bold text-base md:text-lg";
+                resultBox.innerHTML = "🎉 정답입니다! (GREAT SUCCESS!)<br><span class='text-xs text-green-200 font-normal'>정시윤은 돈을 아주아주 좋아합니다! 솔직함 스탯 +100 상승! 💰</span>";
+                triggerConfetti();
+            } else {
+                playSound('lose');
+                // 화면 흔들림 효과
+                quizSection.classList.remove('shake');
+                void quizSection.offsetWidth; // reflow 연산
+                quizSection.classList.add('shake');
+
+                resultBox.className = "mt-4 p-4 border-2 border-red-500 bg-red-950/80 text-red-300 text-center font-bold text-base md:text-lg";
+                resultBox.innerHTML = "❌ 틀렸습니다! (GAME OVER)<br><span class='text-xs text-red-200 font-normal'>거짓말 마세요! 돈을 안 좋아하는 사람이 어디 있나요?! 💸 다시 도전하세요!</span>";
+            }
+        }
+
+        // 8비트 레트로 픽셀 스타일 컨페티 (폭죽)
+        function triggerConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#33ff00', '#ff007f', '#ffe600', '#00f0ff', '#ffffff'];
+
+            for (let i = 0; i < 70; i++) {
+                particles.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    vx: (Math.random() - 0.5) * 14,
+                    vy: (Math.random() - 0.8) * 14,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    life: 100
+                });
+            }
+
+            function animateConfetti() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let alive = false;
+
+                particles.forEach(p => {
+                    if (p.life > 0) {
+                        alive = true;
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        p.vy += 0.3; // 중력
+                        p.life--;
+                        ctx.fillStyle = p.color;
+                        // 네모난 픽셀 알갱이 형태로 표현
+                        ctx.fillRect(p.x, p.y, p.size, p.size);
+                    }
+                });
+
+                if (alive) {
+                    requestAnimationFrame(animateConfetti);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+
+            animateConfetti();
+        }
+
+
+        /* ====================================================
+           5. 나만의 명언 가챠 (12개 명언 배열)
+           ==================================================== */
+        const quotes = [
+            '"오늘 할 일을 내일로 미루면, 내일의 내가 알아서 해결하거나 포기한다." - 정시윤',
+            '"돈으로 행복을 살 수 없다면, 금액이 부족했던 건 아닌지 생각해보자." - 정시윤',
+            '"침대는 내 인생 최고의 메인 퀘스트 영역이자 세이브 포인트다." - 정시윤',
+            '"게임도 인생도 장비빨과 아이템빨이다." - 정시윤',
+            '"늦었다고 생각할 때가 진짜 너무 늦었다. 그러니까 빨리 시작하자!" - 정시윤',
+            '"포켓몬 마스터도 하루에 8시간씩 충분한 수면을 취한다." - 정시윤',
+            '"고민할 시간에 오락실 게임 한 판 더 하는 게 이득이다." - 정시윤',
+            '"세상은 넓고, 사야 할 스팀 할인 게임은 끝이 없다." - 정시윤',
+            '"맛있는 음식을 먹는 순간이야말로 HP 100% 회복 타이밍!" - 정시윤',
+            '"버그 없는 코드와 실패 없는 인생은 없다. 디버깅하면 그만!" - 정시윤',
+            '"열심히 놀고 일한 당신, 레벨업 아이템을 획득할 자격이 있다." - 정시윤',
+            '"피할 수 없다면... 감쪽같이 리스타트 버튼을 누르자!" - 정시윤'
+        ];
+
+        let lastQuoteIdx = -1;
+
+        function getRandomQuote() {
+            playSound('click');
+            let randIdx;
+            do {
+                randIdx = Math.floor(Math.random() * quotes.length);
+            } while (randIdx === lastQuoteIdx && quotes.length > 1);
+            
+            lastQuoteIdx = randIdx;
+
+            const quoteEl = document.getElementById('quoteText');
+            // 연출 효과 (깜빡임 후 텍스트 변환)
+            quoteEl.style.opacity = 0;
+            setTimeout(() => {
+                quoteEl.innerText = quotes[randIdx];
+                quoteEl.style.opacity = 1;
+            }, 150);
+        }
+
+
+        /* ====================================================
+           6. 10초 광클 미니게임 로직
+           ==================================================== */
+        let gameActive = false;
+        let score = 0;
+        let timeLeft = 10.0;
+        let timerInterval = null;
+        let highScore = localStorage.getItem('siyoon_click_highscore') || 0;
+
+        document.getElementById('highScoreText').innerText = highScore;
+
+        function startMiniGame() {
+            playSound('click');
+            if (gameActive) return;
+
+            gameActive = true;
+            score = 0;
+            timeLeft = 10.0;
+
+            document.getElementById('gameScore').innerText = '0';
+            document.getElementById('gameTimer').innerText = '10.0s';
+            document.getElementById('gameStartBtn').classList.add('hidden');
+            document.getElementById('tapArea').classList.remove('hidden');
+            document.getElementById('gameResultBox').classList.add('hidden');
+
+            // 0.1초 단위 타이머
+            const startTime = Date.now();
+            timerInterval = setInterval(() => {
+                const elapsed = (Date.now() - startTime) / 1000;
+                timeLeft = Math.max(0, 10.0 - elapsed);
+                document.getElementById('gameTimer').innerText = timeLeft.toFixed(1) + 's';
+
+                if (timeLeft <= 0) {
+                    endMiniGame();
+                }
+            }, 50);
+        }
+
+        function registerTap() {
+            if (!gameActive) return;
+            score++;
+            playSound('tap');
+            document.getElementById('gameScore').innerText = score;
+        }
+
+        function endMiniGame() {
+            clearInterval(timerInterval);
+            gameActive = false;
+            playSound('win');
+
+            document.getElementById('tapArea').classList.add('hidden');
+            const startBtn = document.getElementById('gameStartBtn');
+            startBtn.classList.remove('hidden');
+            startBtn.innerText = '🔄 다시 도전하기!';
+
+            const resultBox = document.getElementById('gameResultBox');
+            const rankTitle = document.getElementById('gameRankTitle');
+            const detail = document.getElementById('gameFinalDetail');
+
+            resultBox.classList.remove('hidden');
+
+            // 칭호 결정
+            let rank = "";
+            if (score < 25) {
+                rank = "🐢 동네 오락실 초보 핑거";
+            } else if (score < 50) {
+                rank = "⚡ 광속의 연타 마스터";
+            } else if (score < 75) {
+                rank = "🔥 프로게이머 신의 손가락";
+            } else {
+                rank = "👑 전설의 광클 신 GOD FINGER!";
+            }
+
+            rankTitle.innerText = `[최종 결과: ${score}회] ${rank}`;
+
+            // 최고 기록 갱신 여부
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('siyoon_click_highscore', highScore);
+                document.getElementById('highScoreText').innerText = highScore;
+                detail.innerText = `🎉 축하합니다! 새로운 최고 기록(${highScore}회)을 경신하셨습니다!`;
+            } else {
+                detail.innerText = `수고하셨습니다! 당신의 순발력 스탯이 +1 상승했습니다.`;
+            }
+        }
+    </script>
+</body>
+</html>
